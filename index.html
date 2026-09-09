@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>e-Card</title>
+  <style>
+    :root { --teal:#078892; --orange:#ffa01d; --ink:#101010; }
+    * { box-sizing: border-box; }
+    html, body { margin:0; min-height:100%; font-family:Roboto, Arial, Helvetica, sans-serif; color:var(--ink); }
+    body { background:#222; }
+    .phone { width:100%; max-width:738px; min-height:100vh; margin:0 auto; background:var(--orange); position:relative; overflow:hidden; }
+    .top { height:92px; color:#fff; background:var(--teal); box-shadow:0 2px 5px rgba(0,0,0,.42); position:relative; z-index:1; }
+    .toolbar { height:92px; display:flex; align-items:center; padding:0 31px; }
+    .toolbar h1 { margin:0; font-size:34px; font-weight:500; letter-spacing:-1px; }
+    .toolbar-actions { margin-left:auto; height:100%; display:flex; align-items:center; gap:51px; }
+    .barcode { display:flex; align-items:stretch; gap:3px; width:46px; height:28px; }
+    .barcode i { background:#fff; display:block; }
+    .barcode i:nth-child(1){width:3px}.barcode i:nth-child(2){width:5px}.barcode i:nth-child(3){width:2px}.barcode i:nth-child(4){width:4px}.barcode i:nth-child(5){width:2px}.barcode i:nth-child(6){width:5px}.barcode i:nth-child(7){width:3px}.barcode i:nth-child(8){width:2px}.barcode i:nth-child(9){width:4px}
+    .more { width:20px; height:38px; display:flex; flex-flow:column; justify-content:space-around; align-items:center; border:0; padding:0; background:transparent; cursor:pointer; }
+    .more i { display:block; width:8px; height:8px; border-radius:50%; background:#fff; }
+    .config-menu { position:absolute; top:75px; right:16px; width:276px; padding:8px 0; border-radius:4px; background:#fff; color:#242424; box-shadow:0 3px 12px rgba(0,0,0,.35); }
+    .config-menu[hidden] { display:none; }
+    .config-menu button { display:block; width:100%; border:0; padding:15px 20px; background:#fff; color:inherit; text-align:left; font:500 16px Roboto, Arial, sans-serif; cursor:pointer; }
+    .config-menu button:hover, .config-menu button:focus-visible { background:#f0f0f0; outline:0; }
+    .config-menu .menu-note { display:block; padding:0 20px 9px; color:#666; font-size:12px; }
+    main { min-height:calc(100vh - 192px); padding-top:58px; text-align:center; }
+    .usp { width:270px; height:auto; margin:0 auto 9px; display:block; }
+    .usp-name { width:400px; margin:0 auto 53px; font-size:30px; line-height:1.15; font-weight:700; letter-spacing:-1.1px; white-space:nowrap; }
+    .student-type { font-size:35px; line-height:1; margin:0 0 21px; font-weight:400; letter-spacing:-.65px; }
+    .photo { display:block; width:282px; height:377px; margin:0 auto 27px; object-fit:cover; }
+    .student-name { margin:0; font-size:35px; line-height:1.16; font-weight:600; letter-spacing:-1.1px; }
+    .registration { margin:7px 0 8px; font-size:35px; line-height:1; font-weight:400; letter-spacing:.3px; }
+    .institute { margin:0 auto 32px; max-width:650px; font-size:35px; line-height:1.17; font-weight:600; letter-spacing:-1.25px; }
+    .qr-button { display:block; border:0; padding:0; margin:0 auto 33px; background:transparent; cursor:pointer; }
+    .qr { width:396px; height:396px; display:block; }
+    .expires { margin:0 10px 18px; font-size:27px; line-height:1.1; font-weight:400; letter-spacing:-.55px; white-space:nowrap; }
+    .qr-focus { position:fixed; inset:0; z-index:10; display:none; background:rgba(0,0,0,.61); }
+    .qr-focus.is-open { display:block; }
+    .qr-focus-expiry { position:absolute; top:56.1%; left:50%; width:min(100%, 738px); transform:translateX(-50%); margin:0; color:#fff; text-align:center; font-size:27px; line-height:1.1; letter-spacing:-.55px; text-shadow:0 1px 2px #000; white-space:nowrap; }
+    .qr-focus-card { position:absolute; top:60%; left:50%; width:min(78.32%, 578px); transform:translateX(-50%); }
+    .qr-focus-card img { display:block; width:100%; height:auto; }
+    .nav { height:21px; background:#050505; position:relative; }
+    .nav:before { content:""; width:259px; height:8px; border-radius:7px; background:#6d6d6d; position:absolute; left:50%; top:7px; transform:translateX(-50%); }
+    @media (max-width:500px) {
+      .top { height:12.47vw; }
+      .fingerprint { width:3.66vw;height:3.66vw;border-width:.4vw; }.toolbar { height:12.47vw; padding:0 4.2vw; }.toolbar h1 { font-size:4.6vw; }
+      .toolbar-actions { gap:6.9vw; }.barcode{width:6.24vw;height:3.8vw;}.more{height:5.15vw}.more i{width:1.08vw;height:1.08vw}
+      main { padding-top:7.86vw; } .usp { width:36.59vw; margin-bottom:1.22vw; }.usp-name { width:54.2vw; font-size:4.07vw; margin-bottom:7.18vw; }.student-type{font-size:4.74vw;margin-bottom:2.84vw}
+      .photo{width:38.2vw;height:51.08vw;margin-bottom:3.66vw}.student-name,.registration{font-size:4.74vw}.registration{margin:1vw 0 1.08vw}.institute{max-width:88vw;font-size:4.74vw;margin-bottom:4.34vw}.qr-button{margin-bottom:4.47vw}.qr{width:53.66vw;height:53.66vw}.expires,.qr-focus-expiry{font-size:3.66vw}.expires{margin-bottom:2.44vw}.nav{height:2.84vw}.nav:before{width:35.1vw;height:1.08vw;top:.95vw}
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <header class="top">
+      <div class="toolbar">
+        <h1>e-Card</h1>
+        <div class="toolbar-actions" aria-label="Ações">
+          <span class="barcode" aria-label="Código de barras"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <button class="more" id="menu-toggle" type="button" aria-label="Abrir configurações" aria-haspopup="menu" aria-expanded="false"><i></i><i></i><i></i></button>
+        </div>
+      </div>
+      <div class="config-menu" id="config-menu" role="menu" hidden>
+        <button type="button" id="edit-name" role="menuitem">Editar nome</button>
+        <button type="button" id="upload-photo" role="menuitem">Carregar imagem nova</button>
+        <span class="menu-note">A imagem é usada apenas nesta sessão.</span>
+        <button type="button" id="regenerate-number" role="menuitem">Regenerar número</button>
+      </div>
+    </header>
+    <main>
+      <img class="usp" src="assets/logo_usp.svg" alt="USP" />
+      <p class="usp-name">Universidade de São Paulo</p>
+      <p class="student-type">Aluno de Graduação</p>
+      <img class="photo" src="assets/placeholder-photo.svg" alt="Placeholder para foto do estudante" />
+      <input id="photo-input" type="file" accept="image/*" hidden />
+      <h2 class="student-name">NOME DO ESTUDANTE</h2>
+      <p class="registration">15XXXXXX</p>
+      <p class="institute">Instituto de Ciências Matemáticas e de<br>Computação</p>
+      <button class="qr-button" type="button" aria-label="Ampliar código QR" aria-haspopup="dialog">
+        <img class="qr" src="assets/qr-code.png" alt="Código QR do cartão" />
+      </button>
+      <p class="expires">Código QR expira em 09/09/2026 23:59</p>
+    </main>
+    <div class="nav" aria-hidden="true"></div>
+    <div class="qr-focus" id="qr-focus" role="dialog" aria-modal="true" aria-label="Código QR ampliado" aria-hidden="true">
+      <p class="qr-focus-expiry">Código QR expira em 09/09/2026 23:59</p>
+      <div class="qr-focus-card"><img src="assets/qr-code.png" alt="Código QR ampliado" /></div>
+    </div>
+  </div>
+  <script>
+    const focus = document.getElementById('qr-focus');
+    const openQr = document.querySelector('.qr-button');
+    const menuToggle = document.getElementById('menu-toggle');
+    const configMenu = document.getElementById('config-menu');
+    const studentName = document.querySelector('.student-name');
+    const registration = document.querySelector('.registration');
+    const photo = document.querySelector('.photo');
+    const photoInput = document.getElementById('photo-input');
+
+    function closeQrFocus() {
+      focus.classList.remove('is-open');
+      focus.setAttribute('aria-hidden', 'true');
+      openQr.focus();
+    }
+    function closeMenu() {
+      configMenu.hidden = true;
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+    function randomRegistration() {
+      return '15' + String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+    }
+
+    openQr.addEventListener('click', () => {
+      focus.classList.add('is-open');
+      focus.setAttribute('aria-hidden', 'false');
+    });
+    focus.addEventListener('click', closeQrFocus);
+
+    menuToggle.addEventListener('click', event => {
+      event.stopPropagation();
+      const willOpen = configMenu.hidden;
+      configMenu.hidden = !willOpen;
+      menuToggle.setAttribute('aria-expanded', String(willOpen));
+    });
+    configMenu.addEventListener('click', event => event.stopPropagation());
+    document.getElementById('edit-name').addEventListener('click', () => {
+      const name = window.prompt('Nome do estudante:', studentName.textContent);
+      if (name && name.trim()) studentName.textContent = name.trim();
+      closeMenu();
+    });
+    document.getElementById('upload-photo').addEventListener('click', () => {
+      closeMenu();
+      photoInput.click();
+    });
+    photoInput.addEventListener('change', () => {
+      const [file] = photoInput.files;
+      if (file) photo.src = URL.createObjectURL(file);
+      photoInput.value = '';
+    });
+    document.getElementById('regenerate-number').addEventListener('click', () => {
+      registration.textContent = randomRegistration();
+      closeMenu();
+    });
+    document.addEventListener('click', event => {
+      if (!configMenu.hidden && !configMenu.contains(event.target) && event.target !== menuToggle) closeMenu();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        if (focus.classList.contains('is-open')) closeQrFocus();
+        if (!configMenu.hidden) closeMenu();
+      }
+    });
+  </script>
+</body>
+</html>
