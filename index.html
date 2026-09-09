@@ -80,11 +80,11 @@
       <button class="qr-button" type="button" aria-label="Ampliar código QR" aria-haspopup="dialog">
         <img class="qr" src="assets/qr-code.png" alt="Código QR do cartão" />
       </button>
-      <p class="expires">Código QR expira em 09/09/2026 23:59</p>
+      <p class="expires" data-expiry>Código QR expira em --/--/---- 23:59</p>
     </main>
     <div class="nav" aria-hidden="true"></div>
     <div class="qr-focus" id="qr-focus" role="dialog" aria-modal="true" aria-label="Código QR ampliado" aria-hidden="true">
-      <p class="qr-focus-expiry">Código QR expira em 09/09/2026 23:59</p>
+      <p class="qr-focus-expiry" data-expiry>Código QR expira em --/--/---- 23:59</p>
       <div class="qr-focus-card"><img src="assets/qr-code.png" alt="Código QR ampliado" /></div>
     </div>
   </div>
@@ -98,6 +98,18 @@
     const photo = document.querySelector('.photo');
     const photoInput = document.getElementById('photo-input');
 
+    function renderExpiry() {
+      const today = new Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      }).format(new Date());
+      document.querySelectorAll('[data-expiry]').forEach(element => {
+        element.textContent = `Código QR expira em ${today} 23:59`;
+      });
+      const tomorrow = new Date();
+      tomorrow.setHours(24, 0, 1, 0);
+      window.setTimeout(renderExpiry, tomorrow - new Date());
+    }
+
     function closeQrFocus() {
       focus.classList.remove('is-open');
       focus.setAttribute('aria-hidden', 'true');
@@ -110,6 +122,8 @@
     function randomRegistration() {
       return '15' + String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
     }
+
+    renderExpiry();
 
     openQr.addEventListener('click', () => {
       focus.classList.add('is-open');
